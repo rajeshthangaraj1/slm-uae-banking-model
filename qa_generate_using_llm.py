@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.google import Gemini
 from datasets import Dataset
+from datasets import load_dataset
 import html
 import re
 
-
+# Load environment variables
+load_dotenv()
 
 def clean_context(text):
     text = text.replace("\\n", " ")        # replace newline escapes with space
@@ -17,8 +19,7 @@ def clean_context(text):
     text = re.sub(r'\s+', ' ', text)        # normalize whitespace
     return text.strip()
 
-# Load environment variables
-load_dotenv()
+
 
 # Initialize Gemini agent
 agent = Agent(
@@ -98,6 +99,11 @@ if qa_pairs:
     dataset.save_to_disk("gemini_qa_dataset")
     dataset.to_csv("qa_pairs.csv")
     dataset.to_json("qa_pairs.jsonl")
+    dataset.push_to_hub("rajeshthangaraj1/uae-banking-rulebook-qa",token=os.getenv("HF_TOKEN"))
     print("✅ Dataset saved successfully.")
 else:
     print("⚠️ No QA pairs generated.")
+
+
+# ds = load_dataset("rajeshthangaraj1/uae-banking-rulebook-qa")
+# print(ds["train"][0])
